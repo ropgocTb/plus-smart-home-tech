@@ -2,6 +2,7 @@ package ru.yandex.practicum.telemetry.collector.model.hub;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,6 +13,7 @@ import java.util.List;
 public class ScenarioAddedHubEvent extends HubEvent {
 
     @NotBlank
+    @Size(min = 3)
     private String name;
 
     @NotEmpty

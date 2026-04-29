@@ -11,8 +11,6 @@ import ru.yandex.practicum.telemetry.collector.utils.HubEventMapper;
 @Component(value = "DEVICE_ADDED")
 public class DeviceAddedHubEventHandler extends BaseHubEventHandler<DeviceAddedEventAvro> {
 
-    private HubEventMapper mapper;
-
     public DeviceAddedHubEventHandler(KafkaEventProducer producer) {
         super(producer);
     }
@@ -27,7 +25,7 @@ public class DeviceAddedHubEventHandler extends BaseHubEventHandler<DeviceAddedE
         DeviceAddedHubEvent _event = (DeviceAddedHubEvent) event;
         return DeviceAddedEventAvro.newBuilder()
                 .setId(_event.getId())
-                .setType(mapper.mapDeviceTypeToAvro(_event.getDeviceType()))
+                .setType(HubEventMapper.mapDeviceTypeToAvro(_event.getDeviceType()))
                 .build();
     }
 }
