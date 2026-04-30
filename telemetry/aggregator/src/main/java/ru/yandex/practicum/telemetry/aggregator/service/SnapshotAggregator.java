@@ -19,10 +19,17 @@ public class SnapshotAggregator {
     public Optional<SensorsSnapshotAvro> updateState(SensorEventAvro event) {
 
         if (!snapshots.containsKey(event.getHubId())) {
+            Map<String, SensorStateAvro> stateAvroMap = new HashMap<>();
+
+            stateAvroMap.put(event.getId(), SensorStateAvro.newBuilder()
+                            .setTimestamp(event.getTimestamp())
+                            .setData(event.getPayload())
+                            .build());
+
             SensorsSnapshotAvro snapshot = SensorsSnapshotAvro.newBuilder()
                     .setHubId(event.getHubId())
                     .setTimestamp(event.getTimestamp())
-                    .setSensorsState(new HashMap<>())
+                    .setSensorsState(stateAvroMap)
                     .build();
 
             snapshots.put(snapshot.getHubId(), snapshot);
