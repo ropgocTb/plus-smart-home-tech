@@ -25,7 +25,7 @@ public class SnapshotAggregator {
                     .setSensorsState(new HashMap<>())
                     .build();
 
-            snapshots.put(event.getHubId(), snapshot);
+            snapshots.put(snapshot.getHubId(), snapshot);
             return Optional.of(snapshot);
         } else {
             SensorsSnapshotAvro existingSnapshot = snapshots.get(event.getHubId());
