@@ -41,7 +41,7 @@ public class SnapshotAggregator {
 
             if (existingSnapshot.getSensorsState().containsKey(sensorId)) {
                 if (existingSnapshot.getSensorsState().get(sensorId).getTimestamp().isAfter(event.getTimestamp())) {
-                    log.info("Skip old event");
+                    log.info("skip old event");
                     return Optional.empty();
                 }
                 if (existingSnapshot.getSensorsState().get(sensorId).getData().equals(event.getPayload())) {
