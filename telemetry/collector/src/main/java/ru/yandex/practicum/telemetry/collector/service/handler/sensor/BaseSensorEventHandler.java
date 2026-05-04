@@ -2,10 +2,12 @@ package ru.yandex.practicum.telemetry.collector.service.handler.sensor;
 
 import org.apache.avro.specific.SpecificRecordBase;
 import org.springframework.beans.factory.annotation.Value;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
-import ru.yandex.practicum.telemetry.collector.model.sensor.SensorEvent;
 import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
 import ru.yandex.practicum.telemetry.collector.service.handler.SensorEventHandler;
+
+import java.time.Instant;
 
 public abstract class BaseSensorEventHandler<T extends SpecificRecordBase> implements SensorEventHandler {
 
@@ -18,20 +20,23 @@ public abstract class BaseSensorEventHandler<T extends SpecificRecordBase> imple
         this.eventProducer = eventProducer;
     }
 
-    protected abstract T mapToAvro(SensorEvent event);
+    protected abstract T mapToAvro(SensorEventProto event);
 
     @Override
-    public void handle(SensorEvent event) {
+    public void handle(SensorEventProto eventProto) {
 
-        if (event == null)
+        if (eventProto == null)
             throw new IllegalArgumentException("null event");
 
-        T sensorEventPayload = mapToAvro(event);
-        eventProducer.send(topic, event.getHubId(), SensorEventAvro.newBuilder()
-                        .setId(event.getId())
-                        .setHubId(event.getHubId())
-                        .setTimestamp(event.getTimestamp())
-                        .setPayload(sensorEventPayload)
+        T sensorEventPayload = mapToAvro(eventProto);
+        Instant timestamp = Instant.ofEpochSecond(eventProto.getTimestamp().getSeconds(),
+                eventProto.getTimestamp().getNanos());
+
+        eventProducer.send(topic, eventProto.getId(), SensorEventAvro.newBuilder()
+                .setId(eventProto.getId())
+                .setHubId(eventProto.getHubId())
+                .setTimestamp(timestamp)
+                .setPayload(sensorEventPayload)
                 .build());
     }
 }

@@ -1,60 +1,51 @@
 package ru.yandex.practicum.telemetry.collector.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.grpc.telemetry.event.*;
 import ru.yandex.practicum.kafka.telemetry.event.*;
-import ru.yandex.practicum.telemetry.collector.model.hub.*;
 
+@Slf4j
 @Component
 public class HubEventMapper {
 
-    public static DeviceTypeAvro mapDeviceTypeToAvro(DeviceType deviceType) {
+    public DeviceTypeAvro mapDeviceTypeToAvro(DeviceTypeProto deviceType) {
         return switch (deviceType) {
-            case DeviceType.MOTION_SENSOR -> DeviceTypeAvro.MOTION_SENSOR;
-            case DeviceType.TEMPERATURE_SENSOR -> DeviceTypeAvro.TEMPERATURE_SENSOR;
-            case DeviceType.LIGHT_SENSOR -> DeviceTypeAvro.LIGHT_SENSOR;
-            case DeviceType.CLIMATE_SENSOR -> DeviceTypeAvro.CLIMATE_SENSOR;
-            case DeviceType.SWITCH_SENSOR -> DeviceTypeAvro.SWITCH_SENSOR;
+            case DeviceTypeProto.MOTION_SENSOR -> DeviceTypeAvro.MOTION_SENSOR;
+            case DeviceTypeProto.TEMPERATURE_SENSOR -> DeviceTypeAvro.TEMPERATURE_SENSOR;
+            case DeviceTypeProto.LIGHT_SENSOR -> DeviceTypeAvro.LIGHT_SENSOR;
+            case DeviceTypeProto.CLIMATE_SENSOR -> DeviceTypeAvro.CLIMATE_SENSOR;
+            case DeviceTypeProto.SWITCH_SENSOR -> DeviceTypeAvro.SWITCH_SENSOR;
+            case UNRECOGNIZED -> null;
         };
     }
 
-    public static ConditionTypeAvro mapConditionTypeToAvro(ConditionType conditionType) {
-        return switch (conditionType) {
-            case ConditionType.MOTION -> ConditionTypeAvro.MOTION;
-            case ConditionType.LUMINOSITY -> ConditionTypeAvro.LUMINOSITY;
-            case ConditionType.SWITCH -> ConditionTypeAvro.SWITCH;
-            case ConditionType.TEMPERATURE -> ConditionTypeAvro.TEMPERATURE;
-            case ConditionType.CO2LEVEL -> ConditionTypeAvro.CO2LEVEL;
-            case ConditionType.HUMIDITY -> ConditionTypeAvro.HUMIDITY;
-        };
-    }
-
-    public static ConditionOperationAvro mapConditionOperationToAvro(ConditionOperation conditionOperation) {
-        return switch (conditionOperation) {
-            case ConditionOperation.EQUALS -> ConditionOperationAvro.EQUALS;
-            case ConditionOperation.GREATER_THAN -> ConditionOperationAvro.GREATER_THAN;
-            case ConditionOperation.LOWER_THAN -> ConditionOperationAvro.LOWER_THAN;
-        };
-    }
-
-    public static ActionTypeAvro mapActionTypeToAvro(ActionType actionType) {
+    public ActionTypeAvro mapActionTypeToAvro(ActionTypeProto actionType) {
         return switch (actionType) {
-            case ActionType.ACTIVATE -> ActionTypeAvro.ACTIVATE;
-            case ActionType.DEACTIVATE -> ActionTypeAvro.DEACTIVATE;
-            case ActionType.INVERSE -> ActionTypeAvro.INVERSE;
-            case ActionType.SET_VALUE -> ActionTypeAvro.SET_VALUE;
+            case ActionTypeProto.ACTIVATE -> ActionTypeAvro.ACTIVATE;
+            case ActionTypeProto.DEACTIVATE -> ActionTypeAvro.DEACTIVATE;
+            case ActionTypeProto.INVERSE -> ActionTypeAvro.INVERSE;
+            case ActionTypeProto.SET_VALUE -> ActionTypeAvro.SET_VALUE;
+            case UNRECOGNIZED -> null;
         };
     }
 
-    public static ScenarioConditionAvro mapToScenarioConditionAvro(ScenarioCondition scenarioCondition) {
-        return ScenarioConditionAvro.newBuilder()
+    public ScenarioConditionAvro mapToScenarioConditionAvro(ScenarioConditionProto scenarioCondition) {
+        ScenarioConditionAvro.Builder scenarioConditionAvro = ScenarioConditionAvro.newBuilder()
                 .setSensorId(scenarioCondition.getSensorId())
-                .setType(mapConditionTypeToAvro(scenarioCondition.getType()))
-                .setOperation(mapConditionOperationToAvro(scenarioCondition.getOperation()))
-                .setValue(scenarioCondition.getValue())
-                .build();
+                .setType(ConditionTypeAvro.valueOf(scenarioCondition.getType().name()))
+                .setOperation(ConditionOperationAvro.valueOf(scenarioCondition.getOperation().name()));
+
+        switch (scenarioCondition.getValueCase()) {
+            case BOOL_VALUE -> scenarioConditionAvro.setValue(scenarioCondition.getBoolValue());
+            case INT_VALUE -> scenarioConditionAvro.setValue(scenarioCondition.getIntValue());
+            case VALUE_NOT_SET -> scenarioConditionAvro.setValue(null);
+        }
+
+        return scenarioConditionAvro.build();
     }
 
-    public static DeviceActionAvro mapToDeviceActionAvro(DeviceAction deviceAction) {
+    public DeviceActionAvro mapToDeviceActionAvro(DeviceActionProto deviceAction) {
         return DeviceActionAvro.newBuilder()
                 .setSensorId(deviceAction.getSensorId())
                 .setType(mapActionTypeToAvro(deviceAction.getType()))
