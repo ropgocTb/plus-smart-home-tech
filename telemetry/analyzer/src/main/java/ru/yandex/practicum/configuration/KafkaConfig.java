@@ -28,6 +28,9 @@ public class KafkaConfig {
     @Value("${spring.kafka.consumer.hub.client-id}")
     private String hubClientId;
 
+    @Value("${spring.kafka.consumer.hub.auto-offset-reset}")
+    private String hubOffset;
+
     @Value("${spring.kafka.consumer.hub.enable-auto-commit}")
     private String hubAutoCommit;
 
@@ -43,6 +46,9 @@ public class KafkaConfig {
     @Value("${spring.kafka.consumer.snapshots.client-id}")
     private String snapClientId;
 
+    @Value("${spring.kafka.consumer.snapshots.auto-offset-reset}")
+    private String snapOffset;
+
     @Value("${spring.kafka.consumer.snapshots.enable-auto-commit}")
     private String snapAutoCommit;
 
@@ -54,7 +60,7 @@ public class KafkaConfig {
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, snapValueDeserializer);
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, snapGroupId);
         properties.put(ConsumerConfig.CLIENT_ID_CONFIG, snapClientId);
-        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, snapOffset);
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, snapAutoCommit);
         return new KafkaConsumer<>(properties);
     }
@@ -67,7 +73,7 @@ public class KafkaConfig {
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, hubValueDeserializer);
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, hubGroupId);
         properties.put(ConsumerConfig.CLIENT_ID_CONFIG, hubClientId);
-        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, hubOffset);
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, hubAutoCommit);
         return new KafkaConsumer<>(properties);
     }

@@ -1,7 +1,9 @@
 package ru.yandex.practicum.service.snapshot.evaluator;
 
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.grpc.telemetry.event.ConditionTypeProto;
 import ru.yandex.practicum.kafka.telemetry.event.*;
+import ru.yandex.practicum.model.Condition;
 import ru.yandex.practicum.model.ScenarioCondition;
 
 import java.util.Map;
@@ -9,12 +11,23 @@ import java.util.Map;
 @Component
 public class ConditionsEvaluator {
 
-    private static final Map<Class<?>, ValueExtractor> EXTRACTORS = Map.of(
-            TemperatureSensorAvro.class, d -> ((TemperatureSensorAvro)d).getTemperatureC(),
-            ClimateSensorAvro.class, d -> ((ClimateSensorAvro)d).getTemperatureC(),
-            LightSensorAvro.class, d -> ((LightSensorAvro)d).getLuminosity(),
-            MotionSensorAvro.class,       d -> ((MotionSensorAvro)d).getMotion() ? 1 : 0,
-            SwitchSensorAvro.class,       d -> ((SwitchSensorAvro)d).getState() ? 1 : 0
+    private record Key(String type, Class<?> payloadClass) {}
+
+    private static final Map<Key, ValueExtractor> EXTRACTORS = Map.ofEntries(
+            Map.entry(new Key(ConditionTypeProto.TEMPERATURE.name(), TemperatureSensorAvro.class),
+                    p -> ((TemperatureSensorAvro)p).getTemperatureC()),
+            Map.entry(new Key(ConditionTypeProto.LUMINOSITY.name(), LightSensorAvro.class),
+                    p -> ((LightSensorAvro)p).getLuminosity()),
+            Map.entry(new Key(ConditionTypeProto.MOTION.name(), MotionSensorAvro.class),
+                    p -> ((MotionSensorAvro)p).getMotion() ? 1 : 0),
+            Map.entry(new Key(ConditionTypeProto.SWITCH.name(), SwitchSensorAvro.class),
+                    p -> ((SwitchSensorAvro)p).getState() ? 1 : 0),
+            Map.entry(new Key(ConditionTypeProto.TEMPERATURE.name(), ClimateSensorAvro.class),
+                    p -> ((ClimateSensorAvro)p).getTemperatureC()),
+            Map.entry(new Key(ConditionTypeProto.CO2LEVEL.name(), ClimateSensorAvro.class),
+                    p -> ((ClimateSensorAvro)p).getCo2Level()),
+            Map.entry(new Key(ConditionTypeProto.HUMIDITY.name(), ClimateSensorAvro.class),
+                    p -> ((ClimateSensorAvro)p).getHumidity())
     );
 
     public boolean evaluate(ScenarioCondition sc, SensorsSnapshotAvro snapshot) {
@@ -27,7 +40,9 @@ public class ConditionsEvaluator {
         Object data = state.getData();
         if (data == null) return false;
 
-        ValueExtractor extractor = EXTRACTORS.get(data.getClass());
+        Condition conditionType = sc.getCondition();
+        Key key = new Key(conditionType.getType(), data.getClass());
+        ValueExtractor extractor = EXTRACTORS.get(key);
         if (extractor == null) {
             return false;
         }
