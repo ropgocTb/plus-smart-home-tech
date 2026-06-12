@@ -13,43 +13,43 @@ import java.util.Properties;
 @Configuration
 public class KafkaConfig {
 
-    @Value("${spring.kafka.bootstrap-servers}")
+    @Value("${analyzer.kafka.bootstrap-servers}")
     private String server;
 
-    @Value("${spring.kafka.consumer.hub.key-deserializer}")
+    @Value("${analyzer.kafka.consumer.hub.key-deserializer}")
     private String hubKeyDeserializer;
 
-    @Value("${spring.kafka.consumer.hub.value-deserializer}")
+    @Value("${analyzer.kafka.consumer.hub.value-deserializer}")
     private String hubValueDeserializer;
 
-    @Value("${spring.kafka.consumer.hub.group-id}")
+    @Value("${analyzer.kafka.consumer.hub.group-id}")
     private String hubGroupId;
 
-    @Value("${spring.kafka.consumer.hub.client-id}")
+    @Value("${analyzer.kafka.consumer.hub.client-id}")
     private String hubClientId;
 
-    @Value("${spring.kafka.consumer.hub.auto-offset-reset}")
+    @Value("${analyzer.kafka.consumer.hub.auto-offset-reset}")
     private String hubOffset;
 
-    @Value("${spring.kafka.consumer.hub.enable-auto-commit}")
+    @Value("${analyzer.kafka.consumer.hub.enable-auto-commit}")
     private String hubAutoCommit;
 
-    @Value("${spring.kafka.consumer.snapshots.key-deserializer}")
+    @Value("${analyzer.kafka.consumer.snapshots.key-deserializer}")
     private String snapKeyDeserializer;
 
-    @Value("${spring.kafka.consumer.snapshots.value-deserializer}")
+    @Value("${analyzer.kafka.consumer.snapshots.value-deserializer}")
     private String snapValueDeserializer;
 
-    @Value("${spring.kafka.consumer.snapshots.group-id}")
+    @Value("${analyzer.kafka.consumer.snapshots.group-id}")
     private String snapGroupId;
 
-    @Value("${spring.kafka.consumer.snapshots.client-id}")
+    @Value("${analyzer.kafka.consumer.snapshots.client-id}")
     private String snapClientId;
 
-    @Value("${spring.kafka.consumer.snapshots.auto-offset-reset}")
+    @Value("${analyzer.kafka.consumer.snapshots.auto-offset-reset}")
     private String snapOffset;
 
-    @Value("${spring.kafka.consumer.snapshots.enable-auto-commit}")
+    @Value("${analyzer.kafka.consumer.snapshots.enable-auto-commit}")
     private String snapAutoCommit;
 
     @Bean
