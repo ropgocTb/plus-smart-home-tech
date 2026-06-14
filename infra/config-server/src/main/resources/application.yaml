@@ -9,8 +9,10 @@ spring:
         native:
           searchLocations:
             - classpath:config/telemetry/{application}
+      discovery:
+        enabled: true
 server:
-  port: 8888
+  port: 0
 
 eureka:
   client:
