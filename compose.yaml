@@ -43,3 +43,13 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=username
       - POSTGRES_PASSWORD=password
+
+  postgres-shop-db:
+    image: postgres:16.1
+    container_name: postgres-shop-container
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=postgres-shop-db
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
