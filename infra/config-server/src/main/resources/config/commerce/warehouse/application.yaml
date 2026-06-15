@@ -1,0 +1,13 @@
+server:
+  port: 0
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5435/postgres-warehouse-db
+    username: username
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: update

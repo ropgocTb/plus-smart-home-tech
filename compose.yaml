@@ -53,3 +53,23 @@ services:
       - POSTGRES_DB=postgres-shop-db
       - POSTGRES_USER=username
       - POSTGRES_PASSWORD=password
+
+  postgres-cart-db:
+    image: postgres:16.1
+    container_name: postgres-cart-container
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_DB=postgres-cart-db
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+
+  postgres-warehouse-db:
+    image: postgres:16.1
+    container_name: postgres-warehouse-container
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_DB=postgres-warehouse-db
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password

@@ -11,11 +11,11 @@ import java.util.UUID;
 @Setter
 @Getter
 @AllArgsConstructor
-public class CartDto {
+public class ShoppingCartDto {
 
     @NotNull
     private UUID cartId;
 
     @NotNull
-    private Map<UUID, Long> products;
+    private Map<UUID, Integer> products;
 }
