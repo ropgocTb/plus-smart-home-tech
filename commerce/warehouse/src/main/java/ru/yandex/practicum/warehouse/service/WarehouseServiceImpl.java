@@ -59,8 +59,8 @@ public class WarehouseServiceImpl implements WarehouseService {
                 throw new ProductInShoppingCartLowQuantityInWarehouse("Warehouse has not enough quantity of product: " +
                         product.getProductId());
             } else {
-                deliveryWeight += product.getWeight();
-                deliveryVolume += product.getDepth() * product.getWidth() * product.getHeight();
+                deliveryWeight += product.getWeight() * requestedQuantity;
+                deliveryVolume += product.getDepth() * product.getWidth() * product.getHeight() * requestedQuantity;
                 if (product.isFragile())
                     fragile = true;
             }
@@ -103,7 +103,8 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         if (productsInCart.size() != existingProducts.size()) {
 
-            List<String> nonPresentProducts = existingProducts.stream()
+            //выбираем корзину -> смотрим в ней все товары -> если товара нет в existingProducts добавляем в nonPresent
+            List<String> nonPresentProducts = productsInCart.stream()
                     .filter(id -> !existingProducts.contains(id))
                     .map(UUID::toString)
                     .toList();

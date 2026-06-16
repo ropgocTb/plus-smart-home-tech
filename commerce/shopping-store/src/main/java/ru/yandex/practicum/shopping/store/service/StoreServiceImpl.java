@@ -36,7 +36,8 @@ public class StoreServiceImpl implements StoreService {
 
         Sort order = sortParser.parseOrder(sort);
 
-        List<Product> productList = repository.findByProductCategory(category, PageRequest.of(page, size, order));
+        List<Product> productList = repository.findByProductCategoryAndProductState(category,
+                ProductState.ACTIVE, PageRequest.of(page, size, order));
 
         return new PageProductDto(productList.stream()
                 .map(mapper::mapToDto)
