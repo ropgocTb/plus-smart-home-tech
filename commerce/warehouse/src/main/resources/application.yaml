@@ -12,6 +12,11 @@ spring:
       retry:
         useRandomPolicy: true
         max-interval: 6000
+    openfeign:
+      circuitbreaker:
+        enabled: true
+        alphanumeric-ids:
+          enabled: true
 
 eureka:
   client:
