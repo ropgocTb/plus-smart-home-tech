@@ -22,5 +22,6 @@ eureka:
   client:
     registerWithEureka: true
     fetchRegistry: false
+    registryFetchIntervalSeconds: 15
     serviceUrl:
       defaultZone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/
