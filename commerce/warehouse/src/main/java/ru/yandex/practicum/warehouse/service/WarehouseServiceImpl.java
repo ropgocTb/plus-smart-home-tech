@@ -17,6 +17,7 @@ import ru.yandex.practicum.warehouse.model.WarehouseProduct;
 import ru.yandex.practicum.warehouse.repository.WarehouseRepository;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -47,6 +48,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         verifyProductsPresence(cartDto);
 
+        List<UUID> insufficientProducts = new ArrayList<>();
         double deliveryWeight = 0.0;
         double deliveryVolume = 0.0;
         boolean fragile = false;
@@ -56,14 +58,18 @@ public class WarehouseServiceImpl implements WarehouseService {
             int requestedQuantity = cartDto.getProducts().get(product.getProductId());
 
             if (presentQuantity < requestedQuantity) {
-                throw new ProductInShoppingCartLowQuantityInWarehouse("Warehouse has not enough quantity of product: " +
-                        product.getProductId());
+                insufficientProducts.add(product.getProductId());
             } else {
                 deliveryWeight += product.getWeight() * requestedQuantity;
                 deliveryVolume += product.getDepth() * product.getWidth() * product.getHeight() * requestedQuantity;
                 if (product.isFragile())
                     fragile = true;
             }
+        }
+
+        if (!insufficientProducts.isEmpty()) {
+            throw new ProductInShoppingCartLowQuantityInWarehouse("Warehouse has not enough quantity of products: " +
+                    insufficientProducts);
         }
 
         return new BookedProductsDto(deliveryWeight, deliveryVolume, fragile);
