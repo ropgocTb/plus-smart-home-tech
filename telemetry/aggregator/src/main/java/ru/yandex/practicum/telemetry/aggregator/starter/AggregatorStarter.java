@@ -20,10 +20,10 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 public class AggregatorStarter {
-    @Value("${topic.telemetry.sensors-topic}")
+    @Value("${aggregator.kafka.consumer.topic}")
     private String sensorTopic;
 
-    @Value("${aggregator.topic.telemetry-snapshots}")
+    @Value("${aggregator.kafka.producer.topic}")
     private String snapshotTopic;
 
     private final Producer<String, SpecificRecordBase> producer;

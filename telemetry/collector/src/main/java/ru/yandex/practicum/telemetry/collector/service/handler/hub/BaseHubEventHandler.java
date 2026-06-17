@@ -12,7 +12,7 @@ import java.time.Instant;
 
 public abstract class BaseHubEventHandler<T extends SpecificRecordBase> implements HubEventHandler {
 
-    @Value("${kafka.topic.telemetry.hubs-topic}")
+    @Value("${collector.kafka.topics.hubs-topic}")
     private String topic;
 
     protected final KafkaEventProducer eventProducer;

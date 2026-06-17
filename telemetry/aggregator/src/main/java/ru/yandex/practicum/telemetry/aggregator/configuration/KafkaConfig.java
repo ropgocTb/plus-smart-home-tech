@@ -15,31 +15,31 @@ import java.util.Properties;
 @Configuration
 public class KafkaConfig {
 
-    @Value("${spring.kafka.bootstrap-servers}")
+    @Value("${aggregator.kafka.bootstrap-servers}")
     private String server;
 
-    @Value("${spring.kafka.producer.key-serializer}")
+    @Value("${aggregator.kafka.producer.properties.key.serializer}")
     private String keySerializer;
 
-    @Value("${spring.kafka.consumer.key-deserializer}")
+    @Value("${aggregator.kafka.consumer.properties.key.deserializer}")
     private String keyDeserializer;
 
-    @Value("${spring.kafka.producer.value-serializer}")
+    @Value("${aggregator.kafka.producer.properties.value.serializer}")
     private String valueSerializer;
 
-    @Value("${spring.kafka.consumer.value-deserializer}")
+    @Value("${aggregator.kafka.consumer.properties.value.deserializer}")
     private String valueDeserializer;
 
-    @Value("${spring.kafka.consumer.group-id}")
+    @Value("${aggregator.kafka.consumer.properties.group.id}")
     private String groupId;
 
-    @Value("${spring.kafka.consumer.client-id}")
+    @Value("${aggregator.kafka.consumer.properties.client.id}")
     private String clientId;
 
-    @Value("${spring.kafka.consumer.enable-auto-commit}")
+    @Value("${aggregator.kafka.consumer.properties.enable.auto.commit}")
     private String autoCommit;
 
-    @Value("${spring.kafka.consumer.auto-offset-reset}")
+    @Value("${aggregator.kafka.consumer.properties.auto.offset.reset}")
     private String autoOffset;
 
     @Bean
