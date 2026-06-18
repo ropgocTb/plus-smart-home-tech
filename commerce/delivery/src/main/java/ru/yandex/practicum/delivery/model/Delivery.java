@@ -22,11 +22,11 @@ public class Delivery {
     @Column(name = "delivery_id")
     private UUID deliveryId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "from_address_id", referencedColumnName = "address_id")
     private Address fromAddress;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "to_address_id", referencedColumnName = "address_id")
     private Address toAddress;
 
@@ -34,4 +34,8 @@ public class Delivery {
 
     @Enumerated(EnumType.STRING)
     private DeliveryState deliveryState;
+
+    private Double deliveryWeight;
+    private Double deliveryVolume;
+    private Boolean isFragile;
 }

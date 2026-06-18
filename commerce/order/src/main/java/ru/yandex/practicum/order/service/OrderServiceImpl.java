@@ -9,6 +9,7 @@ import ru.yandex.practicum.commerce.contract.payment.PaymentClient;
 import ru.yandex.practicum.commerce.contract.warehouse.WarehouseClient;
 import ru.yandex.practicum.commerce.dto.order.OrderDto;
 import ru.yandex.practicum.commerce.dto.order.OrderState;
+import ru.yandex.practicum.commerce.dto.payment.PaymentDto;
 import ru.yandex.practicum.commerce.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.commerce.exception.order.NoOrderFoundException;
 import ru.yandex.practicum.commerce.request.order.CreateNewOrderRequest;

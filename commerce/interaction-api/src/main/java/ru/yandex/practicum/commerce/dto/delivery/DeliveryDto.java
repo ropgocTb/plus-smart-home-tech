@@ -26,4 +26,13 @@ public class DeliveryDto {
     @NotNull
     @Valid
     private DeliveryState deliveryState;
+
+    @NotNull
+    private Double deliveryWeight;
+
+    @NotNull
+    private Double deliveryVolume;
+
+    @NotNull
+    private Boolean isFragile;
 }
