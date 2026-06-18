@@ -83,7 +83,8 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setState(OrderState.ON_PAYMENT);
-        paymentClient.createPayment(mapper.mapToDto(order));
+        PaymentDto paymentDto = paymentClient.createPayment(mapper.mapToDto(order));
+        order.setPaymentId(paymentDto.getPaymentId());
         log.info("Order: {}, on payment", orderId);
         return mapper.mapToDto(repository.save(order));
     }
