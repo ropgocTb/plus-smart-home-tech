@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: warehouse_route
+          uri: lb://warehouse
+          predicates:
+            - Path=/warehouse/**
+        - id: delivery_service_route
+          uri: lb://delivery
+          predicates:
+            - Path=/delivery/**
+        - id: order_service_route
+          uri: lb://order
+          predicates:
+            - Path=/order/**
+        - id: payment_service_route
+          uri: lb://payment
+          predicates:
+            - Path=/payment/**

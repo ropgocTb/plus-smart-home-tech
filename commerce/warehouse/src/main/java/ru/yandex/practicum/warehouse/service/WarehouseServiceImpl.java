@@ -11,16 +11,18 @@ import ru.yandex.practicum.commerce.exception.warehouse.NoSpecifiedProductInWare
 import ru.yandex.practicum.commerce.exception.warehouse.ProductInShoppingCartLowQuantityInWarehouse;
 import ru.yandex.practicum.commerce.exception.warehouse.SpecifiedProductAlreadyInWarehouseException;
 import ru.yandex.practicum.commerce.request.warehouse.AddProductToWarehouseRequest;
+import ru.yandex.practicum.commerce.request.warehouse.AssemblyProductsForOrderRequest;
 import ru.yandex.practicum.commerce.request.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.commerce.request.warehouse.ShippedToDeliveryRequest;
 import ru.yandex.practicum.warehouse.mapper.WarehouseMapper;
+import ru.yandex.practicum.warehouse.model.OrderBooking;
 import ru.yandex.practicum.warehouse.model.WarehouseProduct;
+import ru.yandex.practicum.warehouse.repository.OrderBookingRepository;
 import ru.yandex.practicum.warehouse.repository.WarehouseRepository;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +35,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     private static final String CURRENT_ADDRESS = ADDRESSES[new SecureRandom().nextInt(ADDRESSES.length)];
 
     private final WarehouseRepository repository;
+    private final OrderBookingRepository orderBookingRepository;
     private final WarehouseMapper mapper;
 
     @Override
@@ -100,6 +103,76 @@ public class WarehouseServiceImpl implements WarehouseService {
         log.info("Added quantity to a product: {}, new quantity: {}", request.getProductId(), request.getQuantity());
     }
 
+    @Override
+    public void shipProducts(ShippedToDeliveryRequest request) {
+        log.info("Shipping products for order: {}", request.getOrderId());
+        OrderBooking booking = orderBookingRepository.findByOrderId(request.getOrderId());
+
+        if (booking == null)
+            throw new IllegalArgumentException("not found booking for request " + request.getOrderId());
+
+        booking.setDeliveryId(request.getDeliveryId());
+        OrderBooking saved = orderBookingRepository.save(booking);
+        log.info("Products shipped, booking id: {}", saved.getBookingId());
+    }
+
+    @Override
+    public void returnProducts(Map<UUID, Integer> products) {
+        log.info("Returning products: {}", products.keySet());
+
+        Set<UUID> productIds = products.keySet();
+        List<WarehouseProduct> productList = repository.findAllById(productIds);
+
+        Map<UUID, WarehouseProduct> stockMap = productList.stream()
+                .collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));
+
+        for (Map.Entry<UUID, Integer> es : products.entrySet()) {
+            UUID productId = es.getKey();
+            Integer quantityToAdd = es.getValue();
+
+            if (quantityToAdd == null || quantityToAdd <= 0) {
+                continue;
+            }
+
+            WarehouseProduct product = stockMap.get(productId);
+            if (product == null) {
+                throw new NoSpecifiedProductInWarehouseException("Id was not found in the warehouse: " + productId);
+            }
+
+            product.setQuantity(product.getQuantity() + quantityToAdd);
+        }
+        log.info("Products returned");
+    }
+
+    @Override
+    public BookedProductsDto assembleProducts(AssemblyProductsForOrderRequest request) {
+        log.info("Assembling products for order: {}", request.getOrderId());
+
+        BookedProductsDto bookedProductsDto = checkQuantity(new ShoppingCartDto(request.getOrderId(),
+                request.getProducts()));
+
+        Map<UUID, WarehouseProduct> productMap = repository.findAllById(request.getProducts().keySet()).stream()
+                .collect(Collectors.toMap(WarehouseProduct::getProductId, Function.identity()));
+
+        for (Map.Entry<UUID, Integer> entry : request.getProducts().entrySet()) {
+            WarehouseProduct product = productMap.get(entry.getKey());
+            product.setQuantity(product.getQuantity() - entry.getValue());
+        }
+        repository.saveAll(productMap.values());
+
+        OrderBooking booking = new OrderBooking();
+        booking.setOrderId(request.getOrderId());
+        booking.setProducts(request.getProducts());
+        booking.setDeliveryWeight(bookedProductsDto.getDeliveryWeight());
+        booking.setDeliveryVolume(bookedProductsDto.getDeliveryVolume());
+        booking.setFragile(bookedProductsDto.getFragile());
+        booking.setDeliveryId(null);
+        OrderBooking saved = orderBookingRepository.save(booking);
+
+        log.info("Booking saved: {}", saved.getBookingId());
+        return bookedProductsDto;
+    }
+
     private void verifyProductsPresence(ShoppingCartDto cartDto) {
         Set<UUID> productsInCart = cartDto.getProducts().keySet();
 
@@ -109,7 +182,6 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         if (productsInCart.size() != existingProducts.size()) {
 
-            //выбираем корзину -> смотрим в ней все товары -> если товара нет в existingProducts добавляем в nonPresent
             List<String> nonPresentProducts = productsInCart.stream()
                     .filter(id -> !existingProducts.contains(id))
                     .map(UUID::toString)
