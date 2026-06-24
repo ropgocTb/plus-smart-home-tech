@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class SortParser {
 
-    // по умолчанию - возрастающий id
-    // аргументы - [{свойство, порядок}, ...]
     public Sort parseOrder(String[] args) {
         if (args == null || args.length == 0) {
             return Sort.by(Sort.Direction.ASC, "productId");

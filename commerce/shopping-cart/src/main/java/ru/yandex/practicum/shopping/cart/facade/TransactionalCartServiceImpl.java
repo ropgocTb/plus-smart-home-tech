@@ -23,7 +23,6 @@ public class TransactionalCartServiceImpl implements TransactionalCartService {
     private final ShoppingCartRepository repository;
     private final ShoppingCartMapper mapper;
 
-    //если имя пользователя всегда валидное то создать новую корзину в случае если она не найдена
     @Override
     public ShoppingCartDto getCart(String username) {
         log.info("Getting cart: {}", username);
@@ -48,7 +47,6 @@ public class TransactionalCartServiceImpl implements TransactionalCartService {
     public ShoppingCartDto addProductsToCart(String username, Map<UUID, Integer> products) {
         log.info("Adding: {}, to cart: {}", products, username);
 
-        //проверка на инициализацию корзины
         getCart(username);
 
         ShoppingCart cart = repository.findByUsernameAndActiveTrue(username)
@@ -62,12 +60,10 @@ public class TransactionalCartServiceImpl implements TransactionalCartService {
         return mapper.mapToDto(cart);
     }
 
-    //а обратно ее активировать не надо по тз =\
     @Override
     public void deactivateCart(String username) {
         log.info("Deactivating cart: {}", username);
 
-        //проверка на инициализацию корзины
         getCart(username);
 
         ShoppingCart cart = repository.findByUsernameAndActiveTrue(username)
@@ -83,7 +79,6 @@ public class TransactionalCartServiceImpl implements TransactionalCartService {
     public ShoppingCartDto removeProductsFromCart(String username, List<UUID> productsIds) {
         log.info("Removing products: {}, from cart: {}", productsIds, username);
 
-        //проверка на инициализацию корзины
         getCart(username);
 
         ShoppingCart cart = repository.findByUsernameAndActiveTrue(username)
@@ -103,7 +98,6 @@ public class TransactionalCartServiceImpl implements TransactionalCartService {
     public ShoppingCartDto changeQuantity(String username, ChangeProductQuantityRequest quantityRequest) {
         log.info("Changing quantity: {},  of cart: {}", quantityRequest, username);
 
-        //проверка на инициализацию корзины
         getCart(username);
 
         ShoppingCart cart = repository.findByUsernameAndActiveTrue(username)

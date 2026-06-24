@@ -25,9 +25,6 @@ public class ClientCartServiceImpl implements ClientCartService {
 
         products.forEach((uid, quantity) -> {
             cartDto.getProducts().merge(uid, quantity, Integer::sum);
-
-            //неизвестно как должен происходить расчет объема и веса заказа
-            //поэтому пусть проверяется на доступность вся корзина целиком
             log.info("added {}", cartDto.getProducts().keySet());
         });
 
